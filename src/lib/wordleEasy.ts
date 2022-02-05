@@ -2,7 +2,7 @@ import wordleArray from '../data/wordle'
 import wordsArray from '../data/words'
 
 export interface Word {
-  word: string,
+  word: string
   in_wordle: boolean
 }
 
