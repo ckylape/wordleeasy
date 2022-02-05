@@ -1,14 +1,21 @@
 <template>
   <div id="wrapper">
+    <div class="header">
+      <h1>Wordle Easy</h1>
+      <h2>Row: {{ row }} - Column: {{ column }}</h2>
+    </div>
     <div class="form">
-      <p>Row: {{ row }} - Column: {{ column }}</p>
-      <input type="text" maxlength="1" @input="alphaOnly" v-model="letter" />
+      <div class="inputWrapper">
+        <label for="letterInput">Letter:</label>
+        <input id="letterInput" type="text" maxlength="1" @input="alphaOnly" v-model="letter" />
 
-      <select v-model="status" @change="statusChange">
-        <option value="absent">Absent (Grey)</option>
-        <option value="present">Present (Yellow)</option>
-        <option value="known">Known (Green)</option>
-      </select>
+        <label for="statusInput">Status:</label>
+        <select id="statusInput" v-model="status" @change="statusChange">
+          <option value="absent">Absent (Grey)</option>
+          <option value="present">Present (Yellow)</option>
+          <option value="known">Known (Green)</option>
+        </select>
+      </div>
 
       <div class="row" v-for="(r, i) in 5" :key="i">
         <Letter
@@ -156,6 +163,7 @@ body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin-top: 25px;
 }
 #wrapper {
   display: flex;
@@ -163,12 +171,28 @@ body {
   flex-wrap: wrap;
   width: 100%;
 }
+.header {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 1rem;
+}
 .form {
   flex: 1;
   text-align: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.inputWrapper {
+  margin-bottom: 1rem;
+}
+#letterInput {
+  width: 25px;
+  margin-right: 25px;
 }
 .words {
   flex: 3;
+  flex-wrap: wrap;
+  padding: 10px;
 }
 .word {
   margin-right:5px;

@@ -39,8 +39,7 @@ export default class Letter extends Vue {
 .letter {
   background: var(--color-bg);
   color: var(--color-text);
-  font-size: 2em;
-  border: 0;
+  font-size: 1.6em;
   padding: 0.5em;
   user-select: none;
   margin: 0.3em 0.1em;
@@ -48,7 +47,7 @@ export default class Letter extends Vue {
   min-width: 1.1em;
 }
 .selected {
-  outline: 2px solid green;
+  outline: 2px solid var(--color-text);
 }
 .default {
   background: var(--color-bg);
