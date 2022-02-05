@@ -67,11 +67,10 @@ export default class App extends Vue {
 
   alphaOnly(event: any): void {
     const letter = event?.target.value
-    console.log(letter)
     if (!letter.match(/[A-Za-z]/)) {
       this.letter = ''
     } else {
-      this.letter = letter
+      this.letter = letter.toLowerCase()
       if(this.status === 'default') {
         this.status = 'absent'
       }
