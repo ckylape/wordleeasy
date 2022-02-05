@@ -10,7 +10,7 @@
         <input id="letterInput" type="text" maxlength="1" @input="alphaOnly($event)" :value="letter" />
 
         <label for="statusInput">Status:</label>
-        <select id="statusInput" v-model="status" @change="statusChange">
+        <select id="statusInput" :value="status" @change="statusChange($event)">
           <option value="absent">Absent (Grey)</option>
           <option value="present">Present (Yellow)</option>
           <option value="known">Known (Green)</option>
@@ -75,11 +75,12 @@ export default class App extends Vue {
       if(this.status === 'default') {
         this.status = 'absent'
       }
-      this.statusChange()
+      this.setBlock(this.block, this.letter, this.status)
     }
   }
 
-  statusChange(): void {
+  statusChange(event: any): void {
+    this.status = event?.target?.value
     this.setBlock(this.block, this.letter, this.status)
   }
 
