@@ -13,6 +13,7 @@
           maxlength="1"
           @input="alphaOnly($event)"
           :value="letter"
+          ref="letterInput"
         />
 
         <label for="statusInput">Status:</label>
@@ -101,7 +102,11 @@ export default class App extends Vue {
     this.block = block
     this.status = status
 
+
+
     this.setBlock(block, letter, status)
+    const li: any = this.$refs.letterInput
+    li.focus()
   }
 
   setBlock(block: string, letter: string, status = 'default'): void {
