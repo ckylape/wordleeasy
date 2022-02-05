@@ -7,7 +7,13 @@
     <div class="form">
       <div class="inputWrapper">
         <label for="letterInput">Letter:</label>
-        <input id="letterInput" type="text" maxlength="1" @input="alphaOnly($event)" :value="letter" />
+        <input
+          id="letterInput"
+          type="text"
+          maxlength="1"
+          @input="alphaOnly($event)"
+          :value="letter"
+        />
 
         <label for="statusInput">Status:</label>
         <select id="statusInput" :value="status" @change="statusChange($event)">
@@ -31,8 +37,15 @@
     </div>
 
     <div class="words">
-      <p>Showing {{ shortList.length }} of {{ wordBank.length }}</p>
-      <span class="word" :class="{ inWordle: entry.in_wordle }" v-for="entry in shortList" :key="entry.word">
+      <p>
+        Showing {{ shortList.length }} of {{ totalCount }}
+      </p>
+      <span
+        class="word"
+        :class="{ inWordle: entry.in_wordle }"
+        v-for="entry in shortList"
+        :key="entry.word"
+      >
         {{ entry.word }}
       </span>
     </div>
@@ -62,7 +75,7 @@ export default class App extends Vue {
   letter = ''
   status = 'default'
   blocks: Block = {}
-  WE: WordleEasy|null = null
+  WE: WordleEasy | null = null
   wordBank: Word[] = []
 
   alphaOnly(event: any): void {
@@ -71,7 +84,7 @@ export default class App extends Vue {
       this.letter = ''
     } else {
       this.letter = letter.toLowerCase()
-      if(this.status === 'default') {
+      if (this.status === 'default') {
         this.status = 'absent'
       }
       this.setBlock(this.block, this.letter, this.status)
@@ -94,16 +107,16 @@ export default class App extends Vue {
   setBlock(block: string, letter: string, status = 'default'): void {
     this.blocks[block] = { letter: letter, status: status }
 
-    if(letter) {
+    if (letter) {
       this.reduceWords()
     }
   }
 
   reduceWords(): void {
     this.WE = new WordleEasy()
-    const present: {[key: string]: number[]} = {}
+    const present: { [key: string]: number[] } = {}
 
-    for(const [blockInfo, letterInfo] of Object.entries(this.blocks)) {
+    for (const [blockInfo, letterInfo] of Object.entries(this.blocks)) {
       const letter = letterInfo.letter
       const column = parseInt(blockInfo[3])
 
@@ -126,7 +139,6 @@ export default class App extends Vue {
       }
     }
 
-
     for (const [letter, pos] of Object.entries(present)) {
       this.WE.setKnown(letter, pos)
     }
@@ -135,9 +147,12 @@ export default class App extends Vue {
   }
 
   get shortList(): Word[] {
-    return this.wordBank.splice(0,100)
+    return this.wordBank.splice(0, 100)
   }
 
+  get totalCount(): number {
+    return this.wordBank.length < 100 ? this.shortList.length : this.wordBank.length
+  }
 
   get block(): string {
     return `r${this.row}c${this.column}`
@@ -196,7 +211,7 @@ body {
   padding: 10px;
 }
 .word {
-  margin-right:5px;
+  margin-right: 5px;
   display: inline-flex;
 }
 .row {
