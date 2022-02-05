@@ -7,7 +7,7 @@
     <div class="form">
       <div class="inputWrapper">
         <label for="letterInput">Letter:</label>
-        <input id="letterInput" type="text" maxlength="1" @input="alphaOnly" v-model="letter" />
+        <input id="letterInput" type="text" maxlength="1" @input="alphaOnly($event)" :value="letter" />
 
         <label for="statusInput">Status:</label>
         <select id="statusInput" v-model="status" @change="statusChange">
@@ -65,11 +65,13 @@ export default class App extends Vue {
   WE: WordleEasy|null = null
   wordBank: Word[] = []
 
-  alphaOnly(): void {
-    if (!this.letter.match(/[A-Za-z]/)) {
+  alphaOnly(event: any): void {
+    const letter = event?.target.value
+    console.log(letter)
+    if (!letter.match(/[A-Za-z]/)) {
       this.letter = ''
     } else {
-      console.log(this.status)
+      this.letter = letter
       if(this.status === 'default') {
         this.status = 'absent'
       }
@@ -104,7 +106,7 @@ export default class App extends Vue {
     for(const [blockInfo, letterInfo] of Object.entries(this.blocks)) {
       const letter = letterInfo.letter
       const column = parseInt(blockInfo[3])
-      console.log(blockInfo)
+
       switch (letterInfo.status) {
         case 'absent':
           this.WE.removeLetter(letter)
@@ -130,7 +132,6 @@ export default class App extends Vue {
     }
 
     this.wordBank = this.WE.sorted()
-    console.log(this.wordBank.length)
   }
 
   get shortList(): Word[] {
