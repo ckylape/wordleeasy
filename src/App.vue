@@ -1,0 +1,185 @@
+<template>
+  <div id="wrapper">
+    <div class="form">
+      <p>Row: {{ row }} - Column: {{ column }}</p>
+      <input type="text" maxlength="1" @input="alphaOnly" v-model="letter" />
+
+      <select v-model="status" @change="statusChange">
+        <option value="absent">Absent (Grey)</option>
+        <option value="present">Present (Yellow)</option>
+        <option value="known">Known (Green)</option>
+      </select>
+
+      <div class="row" v-for="(r, i) in 5" :key="i">
+        <Letter
+          @change-block="changeBlock"
+          :class="{ selected: block === `r${r}c${c}` }"
+          :uid="`r${r}c${c}`"
+          :status="blocks[`r${r}c${c}`]?.status"
+          v-for="(c, k) in 5"
+          :key="k"
+          :letter="blocks[`r${r}c${c}`]?.letter"
+        />
+      </div>
+    </div>
+
+    <div class="words">
+      <p>Showing {{ shortList.length }} of {{ wordBank.length }}</p>
+      <span class="word" :class="{ inWordle: entry.in_wordle }" v-for="entry in shortList" :key="entry.word">
+        {{ entry.word }}
+      </span>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { Options, Vue } from 'vue-class-component'
+import Letter from './components/Letter.vue'
+import { Word, WordleEasy } from './lib/wordleEasy'
+
+interface Block {
+  [key: string]: {
+    letter: string
+    status: string
+  }
+}
+
+@Options({
+  components: {
+    Letter,
+  },
+})
+export default class App extends Vue {
+  row = '1'
+  column = '1'
+  letter = ''
+  status = 'default'
+  blocks: Block = {}
+  WE: WordleEasy|null = null
+  wordBank: Word[] = []
+
+  alphaOnly(): void {
+    if (!this.letter.match(/[A-Za-z]/)) {
+      this.letter = ''
+    } else {
+      console.log(this.status)
+      if(this.status === 'default') {
+        this.status = 'absent'
+      }
+      this.statusChange()
+    }
+  }
+
+  statusChange(): void {
+    this.setBlock(this.block, this.letter, this.status)
+  }
+
+  changeBlock(letter: string, block: string, status = 'default'): void {
+    this.letter = letter
+    this.block = block
+    this.status = status
+
+    this.setBlock(block, letter, status)
+  }
+
+  setBlock(block: string, letter: string, status = 'default'): void {
+    this.blocks[block] = { letter: letter, status: status }
+
+    if(letter) {
+      this.reduceWords()
+    }
+  }
+
+  reduceWords(): void {
+    this.WE = new WordleEasy()
+    const present: {[key: string]: number[]} = {}
+
+    for(const [blockInfo, letterInfo] of Object.entries(this.blocks)) {
+      const letter = letterInfo.letter
+      const column = parseInt(blockInfo[3])
+      console.log(blockInfo)
+      switch (letterInfo.status) {
+        case 'absent':
+          this.WE.removeLetter(letter)
+          break
+        case 'known':
+          this.WE.setPosition(letter, column)
+          break
+        case 'present':
+          if (Object.keys(present).includes(letter)) {
+            present[letter].push(column)
+          } else {
+            present[letter] = [column]
+          }
+          break
+        default:
+          break
+      }
+    }
+
+
+    for (const [letter, pos] of Object.entries(present)) {
+      this.WE.setKnown(letter, pos)
+    }
+
+    this.wordBank = this.WE.sorted()
+    console.log(this.wordBank.length)
+  }
+
+  get shortList(): Word[] {
+    return this.wordBank.splice(0,100)
+  }
+
+
+  get block(): string {
+    return `r${this.row}c${this.column}`
+  }
+
+  set block(value: string) {
+    this.row = value[1]
+    this.column = value[3]
+  }
+}
+</script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: #121213;
+  color: #d7dadc;
+  font-size: 18px;
+}
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.form {
+  flex: 1;
+  text-align: center;
+}
+.words {
+  flex: 3;
+}
+.word {
+  margin-right:5px;
+  display: inline-flex;
+}
+.row {
+  display: flex;
+  justify-content: center;
+}
+.inWordle {
+  color: #8be9fd;
+  font-size: 1.3em;
+}
+</style>
