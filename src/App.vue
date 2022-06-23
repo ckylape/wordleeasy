@@ -38,9 +38,7 @@
     </div>
 
     <div class="words">
-      <p>
-        Showing {{ shortList.length }} of {{ totalCount }}
-      </p>
+      <p>Showing {{ shortList.length }} of {{ totalCount }}</p>
       <span
         class="word"
         :class="{ inWordle: entry.in_wordle }"
@@ -102,8 +100,6 @@ export default class App extends Vue {
     this.block = block
     this.status = status
 
-
-
     this.setBlock(block, letter, status)
     const li: any = this.$refs.letterInput
     li.focus()
@@ -156,7 +152,9 @@ export default class App extends Vue {
   }
 
   get totalCount(): number {
-    return this.wordBank.length < 100 ? this.shortList.length : this.wordBank.length
+    return this.wordBank.length < 100
+      ? this.shortList.length
+      : this.wordBank.length
   }
 
   get block(): string {
